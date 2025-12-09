@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # Script: gera_agenda.py
-# Propósito: Ler a agenda do arquivo .xlsx, processar os dados e gerar um arquivo HTML estático.
+# Propósito: Ler a agenda do arquivo .xlsx, processar os dados e gerar um arquivo HTML estático (index.html).
 
 import pandas as pd
 from jinja2 import Environment, FileSystemLoader
@@ -9,39 +9,54 @@ from jinja2 import Environment, FileSystemLoader
 
 def ler_dados(caminho_planilha='agenda.xlsx'):
     """
-    Lê o arquivo Excel da agenda, renomeia colunas e agrupa por técnico.
+    Lê o arquivo Excel, forçando colunas críticas (ID, Descrição, Observação) 
+    a serem lidas como texto (str) para preservar o formato e zeros.
     """
     try:
-        # Lendo o arquivo EXCEL (.xlsx)
-        # O argumento 'encoding' foi removido, pois não é suportado por pd.read_excel()
-        df = pd.read_excel(caminho_planilha, sheet_name=0) 
+        # Colunas que DEVEM ser lidas como TEXTO (para preservar o zero e o formato)
+        dtype_config = {
+            'ID': str,
+            'Técnico': str,
+            'Cliente': str,
+            # Leitura de 'Descrição' e 'Observação' como str para evitar problemas de tipo
+            'Descrição': str,
+            'Observação': str, 
+            'Status': str
+        }
+        
+        # Lendo o arquivo EXCEL (.xlsx) e aplicando a configuração de tipo
+        df = pd.read_excel(caminho_planilha, sheet_name=0, dtype=dtype_config) 
+        
     except FileNotFoundError:
         print(f"ERRO: Arquivo '{caminho_planilha}' não encontrado.")
-        return None
+        return None 
     except Exception as e:
         print(f"ERRO ao ler a planilha Excel. Verifique se o 'openpyxl' está instalado. Detalhes: {e}")
         return None
     
-    # 1. Ajuste: Renomear a coluna com acento ('Descrição') para um nome que o template entenda ('Descricao')
+    # --- Ajustes Pós-Leitura (Essenciais) ---
+    
+    # 1. Ajuste: Renomear colunas com acento para o padrão que o template entende (sem acento)
     if 'Descrição' in df.columns:
         df = df.rename(columns={'Descrição': 'Descricao'})
     
-    # 2. Preenchimento de valores vazios com string vazia para evitar 'NaN' no HTML
-    df = df.fillna('')
+    if 'Observação' in df.columns:
+        df = df.rename(columns={'Observação': 'Observacao'})
 
+    # 2. Preenchimento de valores vazios com string vazia ('')
+    # Isso é crucial para que o Jinja2 não falhe ou exiba 'NaN' no HTML.
+    df = df.fillna('')
+    
     # Prepara o dicionário de dados que será enviado ao HTML
     dados = {
-        # Formata o horário atual para exibir no painel
         'data_atualizacao': pd.Timestamp.now().strftime('%d/%m/%Y %H:%M:%S'),
         'tecnicos': {}
     }
     
     # Agrupa as linhas por Técnico
     for tecnico, grupo in df.groupby('Técnico'):
-        # Garante que o nome do técnico não é vazio
         tecnico_str = str(tecnico).strip()
         if tecnico_str:
-             # to_dict('records') transforma o grupo em uma lista de dicionários
              dados['tecnicos'][tecnico_str] = grupo.to_dict('records')
         
     return dados
@@ -87,12 +102,12 @@ def main():
     if html_final is None:
         return # Interrompe se houver erro na geração
     
-    # 3. Salvamento do Arquivo HTML
-    with open('agenda.html', 'w', encoding='utf-8') as f:
+    # 3. Salvamento do Arquivo HTML (Usando index.html para o GitHub Pages)
+    with open('index.html', 'w', encoding='utf-8') as f:
         f.write(html_final)
     
     print("---")
-    print(f"✅ Sucesso! Arquivo agenda.html gerado às {dados_agenda['data_atualizacao']}")
+    print(f"✅ Sucesso! Arquivo index.html gerado às {dados_agenda['data_atualizacao']}")
     print("---")
 
 if __name__ == "__main__":
