@@ -36,12 +36,12 @@
             box-shadow: 0 1px 3px rgba(0,0,0,0.2); border-left: 5px solid; 
         }
         
-        /* NOVOS ESTILOS DE STATUS (Dark Mode Friendly) */
-        .CONCLUIDO { background-color: #1e3c12; border-color: #38761D; } /* Verde Escuro */
-        .EM_ANDAMENTO { background-color: #4e3415; border-color: #E69138; } /* Laranja Escuro */
-        .PENDENTE { background-color: #333333; border-color: #666666; } /* Cinza Escuro */
+        /* NOVOS ESTILOS DE STATUS VÍVIDOS */
+        .CONCLUIDO { background-color: #1e561e; border-color: #4CAF50; } /* Verde mais Nítido */
+        .EM_ANDAMENTO { background-color: #5c4015; border-color: #FF9800; } /* Laranja/Âmbar Mais Vívido */
+        .PENDENTE { background-color: #424242; border-color: #9E9E9E; } /* Cinza Médio, mais Distinto */
 
-        .card-header { font-weight: bold; margin-bottom: 5px; color: #f0f0f0; } /* Cor do texto no card */
+        .card-header { font-weight: bold; margin-bottom: 5px; color: #f0f0f0; } 
         .card-obs { 
             font-size: 0.8em; color: #a0a0a0; margin-top: 5px; 
             border-top: 1px dashed #444444; padding-top: 5px; 
@@ -62,8 +62,14 @@
             background-color: #1f1f1f; 
             border: 1px solid #333;
             color: #f0f0f0; /* Texto claro */
+            padding: 10px 20px; border-radius: 5px; margin-bottom: 20px; font-size: 0.9em; 
+            display: flex; flex-wrap: wrap; justify-content: center; gap: 15px;
         }
-        .legenda-cor { border: 1px solid; }
+        .legenda-item { display: flex; align-items: center; gap: 5px; }
+        .legenda-cor { 
+            width: 20px; height: 20px; /* QUADRADO MAIOR AGORA */
+            border: 1px solid; border-radius: 3px; 
+        }
     </style>
 </head>
 <body>
@@ -73,11 +79,11 @@
         <p class="data-att">Última Atualização: {{ dados.data_atualizacao }}</p>
     </div>
 
-    <div class="container-legenda" style="padding: 10px 20px; border-radius: 5px; margin-bottom: 20px; font-size: 0.9em; display: flex; flex-wrap: wrap; justify-content: center; gap: 15px;">
+    <div class="container-legenda">
         <span style="color: #6c757d; font-weight: bold;">Legenda:</span>
-        <span class="legenda-item"><span class="legenda-cor" style="background-color: #1e3c12; border-color: #38761D;"></span> CONCLUIDO</span>
-        <span class="legenda-item"><span class="legenda-cor" style="background-color: #4e3415; border-color: #E69138;"></span> EM ANDAMENTO</span>
-        <span class="legenda-item"><span class="legenda-cor" style="background-color: #333333; border-color: #666666;"></span> PENDENTE</span>
+        <span class="legenda-item"><span class="legenda-cor" style="background-color: #1e561e; border-color: #4CAF50;"></span> CONCLUIDO</span>
+        <span class="legenda-item"><span class="legenda-cor" style="background-color: #5c4015; border-color: #FF9800;"></span> EM ANDAMENTO</span>
+        <span class="legenda-item"><span class="legenda-cor" style="background-color: #424242; border-color: #9E9E9E;"></span> PENDENTE</span>
     </div>
     <div class="container">
         {% for tecnico, tarefas in dados.tecnicos.items() %}
