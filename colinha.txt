@@ -1,0 +1,4 @@
+1. Gerar HTML	python gera_agenda.py	Lê o Excel, cria o novo index.html (o painel).
+2. Enviar para a Nuvem	git add .	Prepara todos os arquivos modificados para envio.
+3. Registrar	git commit -m "Update"	Cria um registro da mudança (você pode usar qualquer texto simples aqui).
+4. Publicar	git push origin main	Envia o painel atualizado para o GitHub, tornando-o público no seu link.

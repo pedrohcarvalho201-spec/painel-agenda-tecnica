@@ -15,13 +15,37 @@
         .card-tarefa { padding: 10px; margin-bottom: 10px; border-radius: 5px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border-left: 5px solid; }
         
         /* ESTILOS DE STATUS */
-        .CONCLUIDO { background-color: #d4edda; border-color: #28a745; } /* Verde */
-        .EM_ANDAMENTO { background-color: #ffeeba; border-color: #ffc107; } /* Amarelo */
-        .PENDENTE { background-color: #f8f9fa; border-color: #6c757d; } /* Cinza */
-        .BLOQUEADO { background-color: #f8d7da; border-color: #dc3545; } /* Vermelho */
+        .CONCLUIDO { background-color: #d4edda; border-color: #28a745; } /* Verde - Sucesso */
+        .EM_ANDAMENTO { background-color: #ffeeba; border-color: #ffc107; } /* Amarelo - Alerta */
+        .PENDENTE { background-color: #f8f9fa; border-color: #6c757d; } /* Cinza - Neutro */
+        .BLOQUEADO { background-color: #f8d7da; border-color: #dc3545; } /* Vermelho - Perigo */
 
         .card-header { font-weight: bold; margin-bottom: 5px; color: #343a40; }
         .card-obs { font-size: 0.8em; color: #6c757d; margin-top: 5px; border-top: 1px dashed #ced4da; padding-top: 5px; }
+        
+        /* CSS DA LEGENDA */
+        .container-legenda { 
+            padding: 10px 20px; 
+            background-color: #e9ecef; 
+            border-radius: 5px; 
+            margin-bottom: 20px; 
+            font-size: 0.9em; 
+            display: flex; 
+            flex-wrap: wrap; 
+            justify-content: center; 
+            gap: 15px;
+        }
+        .legenda-item {
+            display: flex; 
+            align-items: center; 
+            gap: 5px;
+        }
+        .legenda-cor {
+            width: 15px; 
+            height: 15px; 
+            border: 1px solid; 
+            border-radius: 3px;
+        }
     </style>
 </head>
 <body>
@@ -31,6 +55,13 @@
         <p class="data-att">Última Atualização: {{ dados.data_atualizacao }}</p>
     </div>
 
+    <div class="container-legenda">
+        <span style="color: #6c757d; font-weight: bold;">Legenda:</span>
+        <span class="legenda-item"><span class="legenda-cor" style="background-color: #d4edda; border-color: #28a745;"></span> CONCLUIDO</span>
+        <span class="legenda-item"><span class="legenda-cor" style="background-color: #ffeeba; border-color: #ffc107;"></span> EM ANDAMENTO</span>
+        <span class="legenda-item"><span class="legenda-cor" style="background-color: #f8f9fa; border-color: #6c757d;"></span> PENDENTE</span>
+        <span class="legenda-item"><span class="legenda-cor" style="background-color: #f8d7da; border-color: #dc3545;"></span> BLOQUEADO</span>
+    </div>
     <div class="container">
         {% for tecnico, tarefas in dados.tecnicos.items() %}
             <div class="coluna-tecnico">
