@@ -1,19 +1,21 @@
 # -*- coding: utf-8 -*-
-# Script: gera_agenda.py - VERSAO FINAL E CORRIGIDA
+# Script: gera_agenda.py - VERSAO FINAL E CORRIGIDA PARA NOVAS COLUNAS
 
 import pandas as pd
 from jinja2 import Environment, FileSystemLoader
 
+# --- Funções de Processamento de Dados ---
+
 def ler_dados(caminho_planilha='agenda.xlsx'):
     """
-    Lê o arquivo Excel, forçando colunas críticas (ID, Descrição, Observação) 
-    a serem lidas como texto (str) para preservar o formato e zeros.
+    Lê o arquivo Excel, forçando colunas críticas a serem lidas como texto (str).
     """
     try:
-        # Força a leitura de TODAS as colunas como STRING para evitar perda de zeros (ID)
+        # Colunas que DEVEM ser lidas como TEXTO (incluindo a nova 'Cobrança')
         dtype_config = {
             'ID': str, 'Técnico': str, 'Cliente': str, 
-            'Descrição': str, 'Observação': str, 'Status': str
+            'Descrição': str, 'Observação': str, 'Cobrança': str, 
+            'Status': str
         }
         
         # Lendo o arquivo EXCEL (.xlsx)
@@ -33,6 +35,8 @@ def ler_dados(caminho_planilha='agenda.xlsx'):
         df = df.rename(columns={'Descrição': 'Descricao'})
     if 'Observação' in df.columns:
         df = df.rename(columns={'Observação': 'Observacao'})
+    if 'Cobrança' in df.columns: # <--- NOVO: RENOMEANDO COBRANÇA
+        df = df.rename(columns={'Cobrança': 'Cobranca'})
 
     # Preenchimento de valores vazios com string vazia
     df = df.fillna('')
@@ -51,6 +55,8 @@ def ler_dados(caminho_planilha='agenda.xlsx'):
         
     return dados
 
+
+# --- Funções de Geração de HTML (Sem alterações) ---
 
 def gerar_html(dados):
     file_loader = FileSystemLoader('.')
@@ -73,7 +79,6 @@ def main():
     html_final = gerar_html(dados_agenda)
     if html_final is None: return
     
-    # Salva como index.html (padrão do GitHub Pages)
     with open('index.html', 'w', encoding='utf-8') as f:
         f.write(html_final)
     

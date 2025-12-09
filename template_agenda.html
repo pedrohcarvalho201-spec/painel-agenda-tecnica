@@ -5,31 +5,65 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="refresh" content="60"> <title>Dashboard | Agenda Técnica</title>
     <style>
-        /* CSS BÁSICO E RESPONSIVO */
-        body { font-family: Arial, sans-serif; background-color: #f4f7f6; margin: 0; padding: 20px; }
-        .header { background-color: #343a40; color: white; padding: 15px; text-align: center; margin-bottom: 20px; border-radius: 5px; }
+        /* CSS BÁSICO E TEMA ESCURO */
+        body { 
+            font-family: Arial, sans-serif; 
+            background-color: #121212; /* Fundo Preto */
+            color: #e0e0e0; /* Texto Claro */
+            margin: 0; padding: 20px; 
+        }
+        .header { 
+            background-color: #000000; /* Preto sólido */
+            color: white; 
+            padding: 15px; text-align: center; margin-bottom: 20px; border-radius: 5px; 
+            box-shadow: 0 4px 8px rgba(0,0,0,0.5); 
+        }
         .data-att { font-size: 0.9em; opacity: 0.8; }
         .container { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; }
-        .coluna-tecnico { flex: 1 1 300px; min-width: 300px; background-color: #ffffff; padding: 15px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-        .coluna-tecnico h2 { color: #007bff; border-bottom: 2px solid #007bff; padding-bottom: 10px; margin-top: 0; }
-        .card-tarefa { padding: 10px; margin-bottom: 10px; border-radius: 5px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border-left: 5px solid; }
+        .coluna-tecnico { 
+            flex: 1 1 300px; min-width: 300px; 
+            background-color: #1f1f1f; /* Fundo da Coluna Escuro */
+            padding: 15px; border-radius: 8px; 
+            box-shadow: 0 4px 8px rgba(0,0,0,0.5); 
+        }
+        .coluna-tecnico h2 { 
+            color: #4dc4ff; /* Azul Claro para títulos */
+            border-bottom: 2px solid #4dc4ff; 
+            padding-bottom: 10px; margin-top: 0; 
+        }
+        .card-tarefa { 
+            padding: 10px; margin-bottom: 10px; border-radius: 5px; 
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2); border-left: 5px solid; 
+        }
         
-        /* ESTILOS DE STATUS */
-        .CONCLUIDO { background-color: #d4edda; border-color: #28a745; } /* Verde - Sucesso */
-        .EM_ANDAMENTO { background-color: #ffeeba; border-color: #ffc107; } /* Amarelo - Alerta */
-        .PENDENTE { background-color: #f8f9fa; border-color: #6c757d; } /* Cinza - Neutro */
-        .BLOQUEADO { background-color: #f8d7da; border-color: #dc3545; } /* Vermelho - Perigo */
+        /* NOVOS ESTILOS DE STATUS (Dark Mode Friendly) */
+        .CONCLUIDO { background-color: #1e3c12; border-color: #38761D; } /* Verde Escuro */
+        .EM_ANDAMENTO { background-color: #4e3415; border-color: #E69138; } /* Laranja Escuro */
+        .PENDENTE { background-color: #333333; border-color: #666666; } /* Cinza Escuro */
 
-        .card-header { font-weight: bold; margin-bottom: 5px; color: #343a40; }
-        .card-obs { font-size: 0.8em; color: #6c757d; margin-top: 5px; border-top: 1px dashed #ced4da; padding-top: 5px; }
+        .card-header { font-weight: bold; margin-bottom: 5px; color: #f0f0f0; } /* Cor do texto no card */
+        .card-obs { 
+            font-size: 0.8em; color: #a0a0a0; margin-top: 5px; 
+            border-top: 1px dashed #444444; padding-top: 5px; 
+        }
         
+        /* NOVO ESTILO: CAMPO COBRANÇA */
+        .card-cobranca {
+            font-size: 0.9em; 
+            color: #ffcc00; /* Amarelo vibrante para destaque */
+            font-weight: bold; 
+            margin-top: 5px; 
+            border-top: 1px solid #444; 
+            padding-top: 5px; 
+        }
+
         /* CSS DA LEGENDA */
         .container-legenda { 
-            padding: 10px 20px; background-color: #e9ecef; border-radius: 5px; margin-bottom: 20px; font-size: 0.9em; 
-            display: flex; flex-wrap: wrap; justify-content: center; gap: 15px;
+            background-color: #1f1f1f; 
+            border: 1px solid #333;
+            color: #f0f0f0; /* Texto claro */
         }
-        .legenda-item { display: flex; align-items: center; gap: 5px; }
-        .legenda-cor { width: 15px; height: 15px; border: 1px solid; border-radius: 3px; }
+        .legenda-cor { border: 1px solid; }
     </style>
 </head>
 <body>
@@ -39,12 +73,11 @@
         <p class="data-att">Última Atualização: {{ dados.data_atualizacao }}</p>
     </div>
 
-    <div class="container-legenda">
+    <div class="container-legenda" style="padding: 10px 20px; border-radius: 5px; margin-bottom: 20px; font-size: 0.9em; display: flex; flex-wrap: wrap; justify-content: center; gap: 15px;">
         <span style="color: #6c757d; font-weight: bold;">Legenda:</span>
-        <span class="legenda-item"><span class="legenda-cor" style="background-color: #d4edda; border-color: #28a745;"></span> CONCLUIDO</span>
-        <span class="legenda-item"><span class="legenda-cor" style="background-color: #ffeeba; border-color: #ffc107;"></span> EM ANDAMENTO</span>
-        <span class="legenda-item"><span class="legenda-cor" style="background-color: #f8f9fa; border-color: #6c757d;"></span> PENDENTE</span>
-        <span class="legenda-item"><span class="legenda-cor" style="background-color: #f8d7da; border-color: #dc3545;"></span> BLOQUEADO</span>
+        <span class="legenda-item"><span class="legenda-cor" style="background-color: #1e3c12; border-color: #38761D;"></span> CONCLUIDO</span>
+        <span class="legenda-item"><span class="legenda-cor" style="background-color: #4e3415; border-color: #E69138;"></span> EM ANDAMENTO</span>
+        <span class="legenda-item"><span class="legenda-cor" style="background-color: #333333; border-color: #666666;"></span> PENDENTE</span>
     </div>
     <div class="container">
         {% for tecnico, tarefas in dados.tecnicos.items() %}
@@ -56,6 +89,12 @@
                         <div class="card-header">{{ tarefa.ID }} - {{ tarefa.Cliente }}</div>
                         <p>{{ tarefa.Descricao }}</p>
                         
+                        {% if tarefa.Cobranca %}
+                            <div class="card-cobranca">
+                                💰 Cobrança: {{ tarefa.Cobranca }}
+                            </div>
+                        {% endif %}
+
                         {% if tarefa.Observacao %}
                             <div class="card-obs">{{ tarefa.Observacao }}</div>
                         {% endif %}
