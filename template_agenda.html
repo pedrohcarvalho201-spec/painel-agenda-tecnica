@@ -71,9 +71,11 @@
                     <div class="card-tarefa {{ tarefa.Status | upper | replace(' ', '_') }}">
                         <div class="card-header">{{ tarefa.ID }} - {{ tarefa.Cliente }}</div>
                         <p>{{ tarefa.Descricao }}</p>
+                        
                         {% if tarefa.Observacao %}
                             <div class="card-obs">{{ tarefa.Observacao }}</div>
                         {% endif %}
+                        
                     </div>
                 {% endfor %}
                 
