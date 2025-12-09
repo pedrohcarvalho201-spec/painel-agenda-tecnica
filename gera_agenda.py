@@ -1,11 +1,8 @@
 # -*- coding: utf-8 -*-
-# Script: gera_agenda.py
-# Propósito: Ler a agenda do arquivo .xlsx, processar os dados e gerar um arquivo HTML estático (index.html).
+# Script: gera_agenda.py - VERSAO FINAL E CORRIGIDA
 
 import pandas as pd
 from jinja2 import Environment, FileSystemLoader
-
-# --- Funções de Processamento de Dados ---
 
 def ler_dados(caminho_planilha='agenda.xlsx'):
     """
@@ -13,41 +10,34 @@ def ler_dados(caminho_planilha='agenda.xlsx'):
     a serem lidas como texto (str) para preservar o formato e zeros.
     """
     try:
-        # Colunas que DEVEM ser lidas como TEXTO (para preservar o zero e o formato)
+        # Força a leitura de TODAS as colunas como STRING para evitar perda de zeros (ID)
         dtype_config = {
-            'ID': str,
-            'Técnico': str,
-            'Cliente': str,
-            # Leitura de 'Descrição' e 'Observação' como str para evitar problemas de tipo
-            'Descrição': str,
-            'Observação': str, 
-            'Status': str
+            'ID': str, 'Técnico': str, 'Cliente': str, 
+            'Descrição': str, 'Observação': str, 'Status': str
         }
         
-        # Lendo o arquivo EXCEL (.xlsx) e aplicando a configuração de tipo
+        # Lendo o arquivo EXCEL (.xlsx)
         df = pd.read_excel(caminho_planilha, sheet_name=0, dtype=dtype_config) 
         
     except FileNotFoundError:
         print(f"ERRO: Arquivo '{caminho_planilha}' não encontrado.")
         return None 
     except Exception as e:
-        print(f"ERRO ao ler a planilha Excel. Verifique se o 'openpyxl' está instalado. Detalhes: {e}")
+        print(f"ERRO ao ler a planilha Excel. Detalhes: {e}")
         return None
     
-    # --- Ajustes Pós-Leitura (Essenciais) ---
+    # --- Ajustes Pós-Leitura ---
     
-    # 1. Ajuste: Renomear colunas com acento para o padrão que o template entende (sem acento)
+    # Renomeia colunas com acento para o padrão do template (sem acento)
     if 'Descrição' in df.columns:
         df = df.rename(columns={'Descrição': 'Descricao'})
-    
     if 'Observação' in df.columns:
         df = df.rename(columns={'Observação': 'Observacao'})
 
-    # 2. Preenchimento de valores vazios com string vazia ('')
-    # Isso é crucial para que o Jinja2 não falhe ou exiba 'NaN' no HTML.
+    # Preenchimento de valores vazios com string vazia
     df = df.fillna('')
     
-    # Prepara o dicionário de dados que será enviado ao HTML
+    # Prepara o dicionário de dados
     dados = {
         'data_atualizacao': pd.Timestamp.now().strftime('%d/%m/%Y %H:%M:%S'),
         'tecnicos': {}
@@ -62,47 +52,28 @@ def ler_dados(caminho_planilha='agenda.xlsx'):
     return dados
 
 
-# --- Funções de Geração de HTML ---
-
 def gerar_html(dados):
-    """
-    Usa o Jinja2 para renderizar o template HTML com os dados fornecidos.
-    """
-    # O FileSystemLoader procura o arquivo 'template_agenda.html' no diretório atual
     file_loader = FileSystemLoader('.')
     env = Environment(loader=file_loader)
     
     try:
         template = env.get_template('template_agenda.html')
     except Exception as e:
-        print(f"ERRO: Não foi possível carregar o template_agenda.html. Verifique se ele está no mesmo diretório. Detalhes: {e}")
+        print(f"ERRO: Não foi possível carregar o template_agenda.html. Detalhes: {e}")
         return None
     
-    # Renderiza o HTML final
     output = template.render(dados=dados)
-    
     return output
 
 
-# --- Função Principal ---
-
 def main():
-    """
-    Função principal que orquestra a leitura e a geração do arquivo.
-    """
-    # 1. Leitura e Estruturação dos Dados
     dados_agenda = ler_dados()
-    
-    if dados_agenda is None:
-        return # Interrompe se houver erro na leitura
+    if dados_agenda is None: return
         
-    # 2. Geração do HTML
     html_final = gerar_html(dados_agenda)
-
-    if html_final is None:
-        return # Interrompe se houver erro na geração
+    if html_final is None: return
     
-    # 3. Salvamento do Arquivo HTML (Usando index.html para o GitHub Pages)
+    # Salva como index.html (padrão do GitHub Pages)
     with open('index.html', 'w', encoding='utf-8') as f:
         f.write(html_final)
     
