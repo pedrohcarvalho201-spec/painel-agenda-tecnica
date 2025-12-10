@@ -13,10 +13,9 @@
         .header { 
             background-color: #000000; color: white; padding: 15px; margin-bottom: 20px; border-radius: 5px; 
             box-shadow: 0 4px 8px rgba(0,0,0,0.5); 
-            display: flex; /* Para alinhar logo e título */
-            justify-content: space-between; /* Espaço entre logo/título/data */
-            align-items: center; /* Alinhamento vertical */
-            position: relative; /* Base para o botão de recolher */
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
         }
         .main-title-group { text-align: center; flex-grow: 1; }
         .data-att { font-size: 0.9em; opacity: 0.8; text-align: right; width: 150px; }
@@ -60,15 +59,15 @@
         .legenda-cor { width: 20px; height: 20px; border: 1px solid; border-radius: 3px; }
 
         /* ESTILOS PARA ESTATÍSTICAS E ORDENS ABERTAS */
-        #stats-area-collapsible { /* ID para o JavaScript */
+        #stats-area-collapsible { /* O container que será recolhido */
             transition: max-height 0.3s ease-out, opacity 0.3s ease-out;
             overflow: hidden;
-            max-height: 500px; /* Altura máxima para animação de abertura */
+            max-height: 500px; 
             opacity: 1;
         }
         .stats-area.hidden {
-            max-height: 0;
-            opacity: 0;
+            max-height: 0 !important; /* Força o recolhimento total */
+            opacity: 0 !important;
             margin-bottom: 0 !important;
         }
         .stats-area {
@@ -88,8 +87,8 @@
         
         /* NOVO CSS PARA LOGO */
         #logo-container {
-            width: 150px; /* Largura reservada */
-            height: 50px; /* Altura ideal */
+            width: 150px; 
+            height: 50px; 
             display: flex;
             align-items: center;
             justify-content: flex-start;
@@ -97,19 +96,28 @@
         #logo-container img {
             max-width: 100%;
             max-height: 100%;
-            object-fit: contain; /* Garante que a imagem se encaixe sem ser cortada */
+            object-fit: contain; 
         }
         
-        /* CSS para o botão de recolher */
+        /* CORREÇÃO DO BOTÃO DE RECOLHER: Posicionamento como Bloco Centralizado */
+        #collapse-button-container {
+            text-align: center;
+            margin: -10px auto 10px auto; /* Move o botão ligeiramente para cima e centraliza */
+        }
         #collapse-button {
             cursor: pointer;
-            font-size: 24px;
+            font-size: 28px; /* Aumentado para melhor toque */
             color: #4dc4ff;
-            position: absolute;
-            top: 5px;
-            right: 5px;
             line-height: 1;
-            padding: 5px;
+            padding: 5px 15px;
+            display: inline-block; /* Permite centralizar dentro do container */
+            border: 1px solid #333;
+            border-radius: 5px;
+            background-color: #1f1f1f;
+            transition: color 0.2s;
+        }
+        #collapse-button:hover {
+            color: white;
         }
 
     </style>
@@ -118,14 +126,13 @@
     
     <script>
         function toggleStats() {
-            const statsArea = document.getElementById('stats-area-collapsible');
+            const statsArea = document.getElementById('stats-area-content'); // O div pai do stats-area-collapsible
             const button = document.getElementById('collapse-button');
             
             if (statsArea.classList.contains('hidden')) {
                 // Mostrar
                 statsArea.classList.remove('hidden');
                 button.innerHTML = '&#x25BC;'; // Seta para baixo
-                // Armazenar estado no localStorage (lembra a preferência do usuário)
                 localStorage.setItem('statsCollapsed', 'false');
             } else {
                 // Ocultar
@@ -138,7 +145,7 @@
         // Carregar estado ao iniciar a página
         window.onload = function() {
             if (localStorage.getItem('statsCollapsed') === 'true') {
-                document.getElementById('stats-area-collapsible').classList.add('hidden');
+                document.getElementById('stats-area-content').classList.add('hidden');
                 document.getElementById('collapse-button').innerHTML = '&#x25B2;';
             }
         }
@@ -156,42 +163,47 @@
         <p class="data-att">Última Atualização: {{ dados.data_atualizacao }}</p>
     </div>
     
-    <div id="collapse-button" onclick="toggleStats()">&#x25BC;</div>
-
-    <div id="stats-area-collapsible" class="stats-area">
-        <div class="ordens-abertas">
-            <h3>📈 Ordens de Serviço Abertas (Sistema)</h3>
-            <div style="font-size: 2.5em; color: #ffcc00;">{{ dados.ordens_abertas_manual }}</div>
-            <p style="font-size: 0.8em; opacity: 0.7;">(Valor inserido manualmente no Excel)</p>
-        </div>
-
-        <div class="stats-comparativo">
-            <h3>📊 Resumo da Agenda (Tarefas)</h3>
-            <div class="stats-item" style="color: #4CAF50;"><span>CONCLUÍDAS:</span> <span class="stat-value">{{ dados.stats.CONCLUIDO }}</span></div>
-            <div class="stats-item" style="color: #FF9800;"><span>EM ANDAMENTO:</span> <span class="stat-value">{{ dados.stats.EM_ANDAMENTO }}</span></div>
-            <div class="stats-item" style="color: #9E9E9E;"><span>PENDENTES/FILA:</span> <span class="stat-value">{{ dados.stats.PENDENTE }}</span></div>
-            <div class="total-geral"><span>TOTAL NA AGENDA:</span> <span class="stat-value">{{ dados.stats.total }}</span></div>
-
-            <h4 style="color: #4dc4ff; margin-top: 15px; border-top: 1px solid #333; padding-top: 10px;">Comparativo por Técnico:</h4>
-            {% for tecnico, stats in dados.stats.por_tecnico.items() %}
-                <div style="font-size: 0.9em; padding-bottom: 5px;">
-                    <span style="font-weight: bold;">{{ tecnico }}:</span> 
-                    <span style="color: #4CAF50;">C: {{ stats.CONCLUIDO }}</span> | 
-                    <span style="color: #FF9800;">A: {{ stats.EM_ANDAMENTO }}</span> | 
-                    <span style="color: #9E9E9E;">P: {{ stats.PENDENTE }}</span> 
-                    (Total: {{ stats.total }})
-                </div>
-            {% endfor %}
-        </div>
-    </div>
-    
-    <div class="container-legenda">
-        <span style="color: #6c757d; font-weight: bold;">Legenda:</span>
-        <span class="legenda-item"><span class="legenda-cor" style="background-color: #1e561e; border-color: #4CAF50;"></span> CONCLUIDO</span>
-        <span class="legenda-item"><span class="legenda-cor" style="background-color: #5c4015; border-color: #FF9800;"></span> EM ANDAMENTO</span>
-        <span class="legenda-item"><span class="legenda-cor" style="background-color: #424242; border-color: #9E9E9E;"></span> PENDENTE</span>
+    <div id="collapse-button-container">
+        <span id="collapse-button" onclick="toggleStats()">&#x25BC;</span>
     </div>
 
+    <div id="stats-area-content">
+        
+        <div id="stats-area-collapsible" class="stats-area">
+            <div class="ordens-abertas">
+                <h3>📈 Ordens de Serviço Abertas (Sistema)</h3>
+                <div style="font-size: 2.5em; color: #ffcc00;">{{ dados.ordens_abertas_manual }}</div>
+                <p style="font-size: 0.8em; opacity: 0.7;">(Valor inserido manualmente no Excel)</p>
+            </div>
+
+            <div class="stats-comparativo">
+                <h3>📊 Resumo da Agenda (Tarefas)</h3>
+                <div class="stats-item" style="color: #4CAF50;"><span>CONCLUÍDAS:</span> <span class="stat-value">{{ dados.stats.CONCLUIDO }}</span></div>
+                <div class="stats-item" style="color: #FF9800;"><span>EM ANDAMENTO:</span> <span class="stat-value">{{ dados.stats.EM_ANDAMENTO }}</span></div>
+                <div class="stats-item" style="color: #9E9E9E;"><span>PENDENTES/FILA:</span> <span class="stat-value">{{ dados.stats.PENDENTE }}</span></div>
+                <div class="total-geral"><span>TOTAL NA AGENDA:</span> <span class="stat-value">{{ dados.stats.total }}</span></div>
+
+                <h4 style="color: #4dc4ff; margin-top: 15px; border-top: 1px solid #333; padding-top: 10px;">Comparativo por Técnico:</h4>
+                {% for tecnico, stats in dados.stats.por_tecnico.items() %}
+                    <div style="font-size: 0.9em; padding-bottom: 5px;">
+                        <span style="font-weight: bold;">{{ tecnico }}:</span> 
+                        <span style="color: #4CAF50;">C: {{ stats.CONCLUIDO }}</span> | 
+                        <span style="color: #FF9800;">A: {{ stats.EM_ANDAMENTO }}</span> | 
+                        <span style="color: #9E9E9E;">P: {{ stats.PENDENTE }}</span> 
+                        (Total: {{ stats.total }})
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <div class="container-legenda">
+            <span style="color: #6c757d; font-weight: bold;">Legenda:</span>
+            <span class="legenda-item"><span class="legenda-cor" style="background-color: #1e561e; border-color: #4CAF50;"></span> CONCLUIDO</span>
+            <span class="legenda-item"><span class="legenda-cor" style="background-color: #5c4015; border-color: #FF9800;"></span> EM ANDAMENTO</span>
+            <span class="legenda-item"><span class="legenda-cor" style="background-color: #424242; border-color: #9E9E9E;"></span> PENDENTE</span>
+        </div>
+        
+    </div>
     <div class="container">
         {% for tecnico, tarefas in dados.tecnicos.items() %}
             <div class="coluna-tecnico">
