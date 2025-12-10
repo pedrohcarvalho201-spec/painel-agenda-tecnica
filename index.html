@@ -17,7 +17,19 @@
             justify-content: space-between; 
             align-items: center; 
         }
-        .main-title-group { text-align: center; flex-grow: 1; }
+        .main-title-group { 
+            text-align: center; 
+            flex-grow: 1; 
+            display: flex; /* NOVO: Para alinhar o botão ao h1 */
+            justify-content: center; /* Centraliza o grupo */
+            align-items: center; 
+        }
+        /* NOVO: Estilo para alinhar o h1 */
+        .main-title-group h1 {
+            margin: 0;
+            padding-left: 10px; /* Espaço entre a seta e o título */
+        }
+
         .data-att { font-size: 0.9em; opacity: 0.8; text-align: right; width: 150px; }
         .container { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; }
         .coluna-tecnico { 
@@ -59,17 +71,17 @@
         .legenda-cor { width: 20px; height: 20px; border: 1px solid; border-radius: 3px; }
 
         /* ESTILOS PARA ESTATÍSTICAS E ORDENS ABERTAS */
-        #stats-area-content { /* Contêiner que será recolhido/expandido (CORRIGIDO) */
+        #stats-area-content { 
             transition: max-height 0.3s ease-out, opacity 0.3s ease-out, margin 0.3s ease-out, padding 0.3s ease-out;
             overflow: hidden;
-            max-height: 800px; /* Altura grande para garantir que nunca clipe */
+            max-height: 800px; 
             opacity: 1;
-            margin-bottom: 20px; /* Margin base (para o estado expandido) */
+            margin-bottom: 20px; 
         }
         #stats-area-content.hidden {
             max-height: 0 !important; 
             opacity: 0 !important;
-            margin-bottom: 0 !important; /* CRUCIAL: Remove o espaço abaixo */
+            margin-bottom: 0 !important; 
             padding-top: 0 !important;
             padding-bottom: 0 !important;
         }
@@ -102,24 +114,21 @@
             object-fit: contain; 
         }
         
-        /* CSS para o botão de recolher */
+        /* CORREÇÃO DO BOTÃO DE RECOLHER: AGORA ALINHADO AO H1 */
         #collapse-button-container {
-            text-align: center;
-            margin: -10px auto 10px auto; 
+            /* Removido o posicionamento fixo. Não é mais necessário. */
+            display: none; /* Oculta o contêiner antigo */
         }
-        #collapse-button {
+        #collapse-button-header { /* NOVO ID para o botão no cabeçalho */
             cursor: pointer;
             font-size: 28px; 
             color: #4dc4ff;
             line-height: 1;
-            padding: 5px 15px;
-            display: inline-block; 
-            border: 1px solid #333;
-            border-radius: 5px;
-            background-color: #1f1f1f;
+            padding: 5px 0; /* Remove padding lateral para alinhar */
             transition: color 0.2s;
+            margin-left: 10px; /* Adiciona espaço à esquerda do botão */
         }
-        #collapse-button:hover {
+        #collapse-button-header:hover {
             color: white;
         }
 
@@ -130,7 +139,7 @@
     <script>
         function toggleStats() {
             const statsArea = document.getElementById('stats-area-content'); 
-            const button = document.getElementById('collapse-button');
+            const button = document.getElementById('collapse-button-header'); // Mudou para o novo ID
             
             if (statsArea.classList.contains('hidden')) {
                 // Mostrar
@@ -149,7 +158,9 @@
         window.onload = function() {
             if (localStorage.getItem('statsCollapsed') === 'true') {
                 document.getElementById('stats-area-content').classList.add('hidden');
-                document.getElementById('collapse-button').innerHTML = '&#x25B2;';
+                document.getElementById('collapse-button-header').innerHTML = '&#x25B2;'; // Mudou para o novo ID
+            } else {
+                document.getElementById('collapse-button-header').innerHTML = '&#x25BC;';
             }
         }
     </script>
@@ -160,15 +171,16 @@
         </div>
 
         <div class="main-title-group">
+            <span id="collapse-button-header" onclick="toggleStats()">&#x25BC;</span>
+
             <h1>🛠️ Dashboard de Atendimentos</h1>
         </div>
         
-        <p class="data-att">Última Atualização: 10/12/2025 13:57:41</p>
+        <p class="data-att">Última Atualização: 10/12/2025 14:01:53</p>
     </div>
     
     <div id="collapse-button-container">
-        <span id="collapse-button" onclick="toggleStats()">&#x25BC;</span>
-    </div>
+        </div>
 
     <div id="stats-area-content">
         
