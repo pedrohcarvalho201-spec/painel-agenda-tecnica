@@ -59,16 +59,19 @@
         .legenda-cor { width: 20px; height: 20px; border: 1px solid; border-radius: 3px; }
 
         /* ESTILOS PARA ESTATÍSTICAS E ORDENS ABERTAS */
-        #stats-area-collapsible { /* O container que será recolhido */
-            transition: max-height 0.3s ease-out, opacity 0.3s ease-out;
+        #stats-area-content { /* Contêiner que será recolhido/expandido (CORRIGIDO) */
+            transition: max-height 0.3s ease-out, opacity 0.3s ease-out, margin 0.3s ease-out, padding 0.3s ease-out;
             overflow: hidden;
-            max-height: 500px; 
+            max-height: 800px; /* Altura grande para garantir que nunca clipe */
             opacity: 1;
+            margin-bottom: 20px; /* Margin base (para o estado expandido) */
         }
-        .stats-area.hidden {
-            max-height: 0 !important; /* Força o recolhimento total */
+        #stats-area-content.hidden {
+            max-height: 0 !important; 
             opacity: 0 !important;
-            margin-bottom: 0 !important;
+            margin-bottom: 0 !important; /* CRUCIAL: Remove o espaço abaixo */
+            padding-top: 0 !important;
+            padding-bottom: 0 !important;
         }
         .stats-area {
             display: flex; justify-content: space-between; gap: 20px; margin-bottom: 20px; flex-wrap: wrap;
@@ -85,7 +88,7 @@
         .stat-value { font-weight: bold; }
         .total-geral { font-size: 1.1em; font-weight: bold; padding-top: 10px; border-top: 2px solid #555; margin-top: 5px;}
         
-        /* NOVO CSS PARA LOGO */
+        /* CSS PARA LOGO */
         #logo-container {
             width: 150px; 
             height: 50px; 
@@ -99,18 +102,18 @@
             object-fit: contain; 
         }
         
-        /* CORREÇÃO DO BOTÃO DE RECOLHER: Posicionamento como Bloco Centralizado */
+        /* CSS para o botão de recolher */
         #collapse-button-container {
             text-align: center;
-            margin: -10px auto 10px auto; /* Move o botão ligeiramente para cima e centraliza */
+            margin: -10px auto 10px auto; 
         }
         #collapse-button {
             cursor: pointer;
-            font-size: 28px; /* Aumentado para melhor toque */
+            font-size: 28px; 
             color: #4dc4ff;
             line-height: 1;
             padding: 5px 15px;
-            display: inline-block; /* Permite centralizar dentro do container */
+            display: inline-block; 
             border: 1px solid #333;
             border-radius: 5px;
             background-color: #1f1f1f;
@@ -126,7 +129,7 @@
     
     <script>
         function toggleStats() {
-            const statsArea = document.getElementById('stats-area-content'); // O div pai do stats-area-collapsible
+            const statsArea = document.getElementById('stats-area-content'); 
             const button = document.getElementById('collapse-button');
             
             if (statsArea.classList.contains('hidden')) {
@@ -160,7 +163,7 @@
             <h1>🛠️ Dashboard de Atendimentos</h1>
         </div>
         
-        <p class="data-att">Última Atualização: 10/12/2025 13:40:41</p>
+        <p class="data-att">Última Atualização: 10/12/2025 13:57:41</p>
     </div>
     
     <div id="collapse-button-container">
@@ -169,7 +172,7 @@
 
     <div id="stats-area-content">
         
-        <div id="stats-area-collapsible" class="stats-area">
+        <div class="stats-area">
             <div class="ordens-abertas">
                 <h3>📈 Ordens de Serviço Abertas (Sistema)</h3>
                 <div style="font-size: 2.5em; color: #ffcc00;">Maxvel: 25 / Forte: 16</div>
