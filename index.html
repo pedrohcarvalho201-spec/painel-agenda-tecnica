@@ -7,84 +7,149 @@
     <style>
         /* CSS BÁSICO E TEMA ESCURO */
         body { 
-            font-family: Arial, sans-serif; 
-            background-color: #121212; /* Fundo Preto */
-            color: #e0e0e0; /* Texto Claro */
+            font-family: Arial, sans-serif; background-color: #121212; color: #e0e0e0; 
             margin: 0; padding: 20px; 
         }
         .header { 
-            background-color: #000000; /* Preto sólido */
-            color: white; 
-            padding: 15px; text-align: center; margin-bottom: 20px; border-radius: 5px; 
+            background-color: #000000; color: white; padding: 15px; text-align: center; margin-bottom: 20px; border-radius: 5px; 
             box-shadow: 0 4px 8px rgba(0,0,0,0.5); 
         }
         .data-att { font-size: 0.9em; opacity: 0.8; }
         .container { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; }
         .coluna-tecnico { 
             flex: 1 1 300px; min-width: 300px; 
-            background-color: #1f1f1f; /* Fundo da Coluna Escuro */
-            padding: 15px; border-radius: 8px; 
+            background-color: #1f1f1f; padding: 15px; border-radius: 8px; 
             box-shadow: 0 4px 8px rgba(0,0,0,0.5); 
         }
         .coluna-tecnico h2 { 
-            color: #4dc4ff; /* Azul Claro para títulos */
-            border-bottom: 2px solid #4dc4ff; 
-            padding-bottom: 10px; margin-top: 0; 
+            color: #4dc4ff; border-bottom: 2px solid #4dc4ff; padding-bottom: 10px; margin-top: 0; 
         }
         .card-tarefa { 
             padding: 10px; margin-bottom: 10px; border-radius: 5px; 
             box-shadow: 0 1px 3px rgba(0,0,0,0.2); border-left: 5px solid; 
         }
         
-        /* NOVOS ESTILOS DE STATUS VÍVIDOS */
-        .CONCLUIDO { background-color: #1e561e; border-color: #4CAF50; } /* Verde mais Nítido */
-        .EM_ANDAMENTO { background-color: #5c4015; border-color: #FF9800; } /* Laranja/Âmbar Mais Vívido */
-        .PENDENTE { background-color: #424242; border-color: #9E9E9E; } /* Cinza Médio, mais Distinto */
+        /* ESTILOS DE STATUS VÍVIDOS */
+        .CONCLUIDO { background-color: #1e561e; border-color: #4CAF50; } 
+        .EM_ANDAMENTO { background-color: #5c4015; border-color: #FF9800; } 
+        .PENDENTE { background-color: #424242; border-color: #9E9E9E; } 
 
         .card-header { font-weight: bold; margin-bottom: 5px; color: #f0f0f0; } 
+        
+        /* CORRIGIDO: OBSERVAÇÃO COM MAIS CONTRASTE */
         .card-obs { 
-            font-size: 0.8em; color: #a0a0a0; margin-top: 5px; 
-            border-top: 1px dashed #444444; padding-top: 5px; 
+            font-size: 0.8em; color: #ffffff; /* Branca para alto contraste */
+            margin-top: 5px; 
+            border-top: 1px dashed #666666; /* Linha de separação mais clara */
+            padding-top: 5px; 
         }
         
-        /* NOVO ESTILO: CAMPO COBRANÇA */
         .card-cobranca {
-            font-size: 0.9em; 
-            color: #ffcc00; /* Amarelo vibrante para destaque */
-            font-weight: bold; 
-            margin-top: 5px; 
-            border-top: 1px solid #444; 
-            padding-top: 5px; 
+            font-size: 0.9em; color: #ffcc00; font-weight: bold; margin-top: 5px; 
+            border-top: 1px solid #444; padding-top: 5px; 
         }
 
         /* CSS DA LEGENDA */
         .container-legenda { 
-            background-color: #1f1f1f; 
-            border: 1px solid #333;
-            color: #f0f0f0; /* Texto claro */
+            background-color: #1f1f1f; border: 1px solid #333; color: #f0f0f0; 
             padding: 10px 20px; border-radius: 5px; margin-bottom: 20px; font-size: 0.9em; 
             display: flex; flex-wrap: wrap; justify-content: center; gap: 15px;
         }
         .legenda-item { display: flex; align-items: center; gap: 5px; }
-        .legenda-cor { 
-            width: 20px; height: 20px; /* QUADRADO MAIOR AGORA */
-            border: 1px solid; border-radius: 3px; 
+        .legenda-cor { width: 20px; height: 20px; border: 1px solid; border-radius: 3px; }
+
+        /* ESTILOS PARA ESTATÍSTICAS E ORDENS ABERTAS */
+        .stats-area {
+            display: flex; justify-content: space-between; gap: 20px; margin-bottom: 20px; flex-wrap: wrap;
         }
+        .ordens-abertas {
+            background-color: #1f1f1f; padding: 15px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+            flex: 1 1 250px; text-align: center; border: 2px solid #ffcc00;
+        }
+        .stats-comparativo {
+            background-color: #1f1f1f; padding: 15px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+            flex: 2 1 450px;
+        }
+        .stats-item { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px dashed #333; }
+        .stat-value { font-weight: bold; }
+        .total-geral { font-size: 1.1em; font-weight: bold; padding-top: 10px; border-top: 2px solid #555; margin-top: 5px;}
+
     </style>
 </head>
 <body>
 
     <div class="header">
-        <h1>🛠️ Agenda de Atendimentos</h1>
-        <p class="data-att">Última Atualização: 10/12/2025 11:22:15</p>
+        <h1>🛠️ Dashboard de Atendimentos</h1>
+        <p class="data-att">Última Atualização: 10/12/2025 12:07:20</p>
     </div>
 
+    <div class="stats-area">
+        
+        <div class="ordens-abertas">
+            <h3>📈 Ordens de Serviço Abertas (Sistema)</h3>
+            <div style="font-size: 2.5em; color: #4dc4ff;">Maxvel: X / Forte: Y</div>
+            <p style="font-size: 0.8em; opacity: 0.7;">(Valor inserido manualmente no Excel)</p>
+        </div>
+
+        <div class="stats-comparativo">
+            <h3>📊 Resumo da Agenda (Tarefas)</h3>
+            <div class="stats-item" style="color: #4CAF50;"><span>CONCLUÍDAS:</span> <span class="stat-value">2</span></div>
+            <div class="stats-item" style="color: #FF9800;"><span>EM ANDAMENTO:</span> <span class="stat-value">0</span></div>
+            <div class="stats-item" style="color: #9E9E9E;"><span>PENDENTES/FILA:</span> <span class="stat-value">0</span></div>
+            <div class="total-geral"><span>TOTAL NA AGENDA:</span> <span class="stat-value">14</span></div>
+
+            <h4 style="color: #4dc4ff; margin-top: 15px; border-top: 1px solid #333; padding-top: 10px;">Comparativo por Técnico:</h4>
+            
+                <div style="font-size: 0.9em; padding-bottom: 5px;">
+                    <span style="font-weight: bold;">Fábio:</span> 
+                    <span style="color: #4CAF50;">C: 0</span> | 
+                    <span style="color: #FF9800;">A: 0</span> | 
+                    <span style="color: #9E9E9E;">P: 0</span> 
+                    (Total: 1)
+                </div>
+            
+                <div style="font-size: 0.9em; padding-bottom: 5px;">
+                    <span style="font-weight: bold;">Giovani:</span> 
+                    <span style="color: #4CAF50;">C: 2</span> | 
+                    <span style="color: #FF9800;">A: 0</span> | 
+                    <span style="color: #9E9E9E;">P: 0</span> 
+                    (Total: 6)
+                </div>
+            
+                <div style="font-size: 0.9em; padding-bottom: 5px;">
+                    <span style="font-weight: bold;">Marcos:</span> 
+                    <span style="color: #4CAF50;">C: 0</span> | 
+                    <span style="color: #FF9800;">A: 0</span> | 
+                    <span style="color: #9E9E9E;">P: 0</span> 
+                    (Total: 3)
+                </div>
+            
+                <div style="font-size: 0.9em; padding-bottom: 5px;">
+                    <span style="font-weight: bold;">Pedro (itaúna):</span> 
+                    <span style="color: #4CAF50;">C: 0</span> | 
+                    <span style="color: #FF9800;">A: 0</span> | 
+                    <span style="color: #9E9E9E;">P: 0</span> 
+                    (Total: 2)
+                </div>
+            
+                <div style="font-size: 0.9em; padding-bottom: 5px;">
+                    <span style="font-weight: bold;">Roberto:</span> 
+                    <span style="color: #4CAF50;">C: 0</span> | 
+                    <span style="color: #FF9800;">A: 0</span> | 
+                    <span style="color: #9E9E9E;">P: 0</span> 
+                    (Total: 2)
+                </div>
+            
+        </div>
+    </div>
+    
     <div class="container-legenda">
         <span style="color: #6c757d; font-weight: bold;">Legenda:</span>
         <span class="legenda-item"><span class="legenda-cor" style="background-color: #1e561e; border-color: #4CAF50;"></span> CONCLUIDO</span>
         <span class="legenda-item"><span class="legenda-cor" style="background-color: #5c4015; border-color: #FF9800;"></span> EM ANDAMENTO</span>
         <span class="legenda-item"><span class="legenda-cor" style="background-color: #424242; border-color: #9E9E9E;"></span> PENDENTE</span>
     </div>
+
     <div class="container">
         
             <div class="coluna-tecnico">

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Script: gera_agenda.py - VERSAO FINAL E CORRIGIDA PARA NOVAS COLUNAS
+# Script: gera_agenda.py - VERSAO FINAL E CORRIGIDA PARA NOVAS COLUNAS E ESTATÍSTICAS
 
 import pandas as pd
 from jinja2 import Environment, FileSystemLoader
@@ -8,17 +8,16 @@ from jinja2 import Environment, FileSystemLoader
 
 def ler_dados(caminho_planilha='agenda.xlsx'):
     """
-    Lê o arquivo Excel, forçando colunas críticas a serem lidas como texto (str).
+    Lê o arquivo Excel, processa dados, calcula estatísticas e agrupa por técnico.
     """
     try:
-        # Colunas que DEVEM ser lidas como TEXTO (incluindo a nova 'Cobrança')
+        # Colunas que DEVEM ser lidas como TEXTO (incluindo as novas)
         dtype_config = {
             'ID': str, 'Técnico': str, 'Cliente': str, 
             'Descrição': str, 'Observação': str, 'Cobrança': str, 
-            'Status': str
+            'Status': str, 'Ordens Abertas': str # <--- NOVO: Leitura da Coluna Ordens Abertas
         }
         
-        # Lendo o arquivo EXCEL (.xlsx)
         df = pd.read_excel(caminho_planilha, sheet_name=0, dtype=dtype_config) 
         
     except FileNotFoundError:
@@ -35,28 +34,70 @@ def ler_dados(caminho_planilha='agenda.xlsx'):
         df = df.rename(columns={'Descrição': 'Descricao'})
     if 'Observação' in df.columns:
         df = df.rename(columns={'Observação': 'Observacao'})
-    if 'Cobrança' in df.columns: # <--- NOVO: RENOMEANDO COBRANÇA
+    if 'Cobrança' in df.columns:
         df = df.rename(columns={'Cobrança': 'Cobranca'})
+    
+    # Renomeia a coluna que você adicionará
+    if 'Ordens Abertas' in df.columns:
+        df = df.rename(columns={'Ordens Abertas': 'OrdensAbertas'})
 
     # Preenchimento de valores vazios com string vazia
     df = df.fillna('')
     
-    # Prepara o dicionário de dados
-    dados = {
-        'data_atualizacao': pd.Timestamp.now().strftime('%d/%m/%Y %H:%M:%S'),
-        'tecnicos': {}
+    # --- Cálculo de Estatísticas ---
+    
+    stats = {
+        'total': 0,
+        'CONCLUIDO': 0,
+        'EM_ANDAMENTO': 0,
+        'PENDENTE': 0,
+        'por_tecnico': {}
     }
     
-    # Agrupa as linhas por Técnico
+    # Converte a coluna Status para maiúsculas e substitui espaços
+    df['Status_Clean'] = df['Status'].str.upper().str.replace(' ', '_')
+    
+    tecnicos_data = {}
+    
     for tecnico, grupo in df.groupby('Técnico'):
         tecnico_str = str(tecnico).strip()
         if tecnico_str:
-             dados['tecnicos'][tecnico_str] = grupo.to_dict('records')
-        
+            grupo_stats = grupo['Status_Clean'].value_counts().to_dict()
+            
+            # Garante que todas as chaves de status existem
+            tecnico_stats = {
+                'total': len(grupo),
+                'CONCLUIDO': grupo_stats.get('CONCLUIDO', 0),
+                'EM_ANDAMENTO': grupo_stats.get('EM_ANDAMENTO', 0),
+                'PENDENTE': grupo_stats.get('PENDENTE', 0),
+                'BLOQUEADO': grupo_stats.get('BLOQUEADO', 0) # Mantendo bloqueado para cálculo, mesmo sem legenda
+            }
+            
+            stats['por_tecnico'][tecnico_str] = tecnico_stats
+            
+            # Acumula total geral
+            stats['total'] += tecnico_stats['total']
+            stats['CONCLUIDO'] += tecnico_stats['CONCLUIDO']
+            stats['EM_ANDAMENTO'] += tecnico_stats['EM_ANDAMENTO']
+            stats['PENDENTE'] += tecnico_stats['PENDENTE']
+            
+            tecnicos_data[tecnico_str] = grupo.to_dict('records')
+
+    # Pega o valor da coluna 'Ordens Abertas' (assumindo que o valor é o mesmo em todas as linhas, pegamos o primeiro não vazio)
+    ordens_abertas_manual = df['OrdensAbertas'].replace('', pd.NA).dropna().iloc[0] if not df['OrdensAbertas'].empty and not df['OrdensAbertas'].replace('', pd.NA).dropna().empty else 'N/A'
+    
+    # Prepara o dicionário de dados final
+    dados = {
+        'data_atualizacao': pd.Timestamp.now().strftime('%d/%m/%Y %H:%M:%S'),
+        'tecnicos': tecnicos_data,
+        'stats': stats,
+        'ordens_abertas_manual': ordens_abertas_manual
+    }
+    
     return dados
 
 
-# --- Funções de Geração de HTML (Sem alterações) ---
+# --- Funções de Geração de HTML (As mesmas) ---
 
 def gerar_html(dados):
     file_loader = FileSystemLoader('.')
