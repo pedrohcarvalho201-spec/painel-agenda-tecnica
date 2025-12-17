@@ -1,0 +1,2 @@
+python salvar_historico.py
+pause
