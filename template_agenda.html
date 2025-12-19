@@ -1,123 +1,27 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="refresh" content="60">
-    <title>Dashboard | Agenda Técnica</title>
-    <style>
-        body { font-family: Arial, sans-serif; background-color: #121212; color: #e0e0e0; margin: 0; padding: 20px; }
-        .header { background-color: #000000; color: white; padding: 15px; margin-bottom: 20px; border-radius: 5px; box-shadow: 0 4px 8px rgba(0,0,0,0.5); display: flex; justify-content: space-between; align-items: center; }
-        .main-title-group { text-align: center; flex-grow: 1; display: flex; justify-content: center; align-items: center; }
-        .main-title-group h1 { margin: 0; padding-left: 10px; }
-        .data-att { font-size: 0.9em; opacity: 0.8; text-align: right; width: 150px; }
-        
-        .container { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; }
-        .coluna-tecnico { flex: 1 1 300px; min-width: 300px; background-color: #1f1f1f; padding: 15px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.5); }
-        .coluna-tecnico h2 { color: #4dc4ff; border-bottom: 2px solid #4dc4ff; padding-bottom: 10px; margin-top: 0; }
-        
-        /* CORES DE STATUS */
-        .card-tarefa { padding: 10px; margin-bottom: 10px; border-radius: 5px; box-shadow: 0 1px 3px rgba(0,0,0,0.2); border-left: 5px solid; }
-        .CONCLUIDO { background-color: #1e561e; border-color: #4CAF50; } 
-        .EM_ANDAMENTO { background-color: #5c4015; border-color: #FF9800; } 
-        .PENDENTE { background-color: #424242; border-color: #9E9E9E; } 
-        .FALHA { background-color: #581818; border-color: #ff4444; } /* <--- NOVA COR VERMELHA */
-
-        .card-header { font-weight: bold; margin-bottom: 5px; color: #f0f0f0; } 
-        .card-obs { font-size: 0.8em; color: #ffffff; margin-top: 5px; border-top: 1px dashed #666666; padding-top: 5px; }
-        .card-cobranca { font-size: 0.9em; color: #ffcc00; font-weight: bold; margin-top: 5px; border-top: 1px solid #444; padding-top: 5px; }
-
-        /* RECOLHIMENTO */
-        #stats-area-content { transition: max-height 0.3s ease-out, opacity 0.3s ease-out, margin 0.3s ease-out; overflow: hidden; max-height: 800px; opacity: 1; margin-bottom: 20px; }
-        #stats-area-content.hidden { max-height: 0 !important; opacity: 0 !important; margin-bottom: 0 !important; }
-        
-        .stats-area { display: flex; justify-content: space-between; gap: 20px; margin-bottom: 20px; flex-wrap: wrap; }
-        .ordens-abertas { background-color: #1f1f1f; padding: 15px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.5); flex: 1 1 250px; text-align: center; border: 2px solid #ffcc00; }
-        .stats-comparativo { background-color: #1f1f1f; padding: 15px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.5); flex: 2 1 450px; }
-        .stats-item { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px dashed #333; }
-        .stat-value { font-weight: bold; }
-
-        #logo-container { width: 150px; height: 50px; display: flex; align-items: center; justify-content: flex-start; }
-        #logo-container img { max-width: 100%; max-height: 100%; object-fit: contain; }
-        #collapse-button-header { cursor: pointer; font-size: 28px; color: #4dc4ff; transition: color 0.2s; }
-    </style>
-</head>
-<body>
-    
-    <script>
-        function toggleStats() {
-            const statsArea = document.getElementById('stats-area-content'); 
-            const button = document.getElementById('collapse-button-header');
-            if (statsArea.classList.contains('hidden')) {
-                statsArea.classList.remove('hidden');
-                button.innerHTML = '&#x25BC;';
-                localStorage.setItem('statsCollapsed', 'false');
-            } else {
-                statsArea.classList.add('hidden');
-                button.innerHTML = '&#x25B2;';
-                localStorage.setItem('statsCollapsed', 'true');
-            }
-        }
-        window.onload = function() {
-            if (localStorage.getItem('statsCollapsed') === 'true') {
-                document.getElementById('stats-area-content').classList.add('hidden');
-                document.getElementById('collapse-button-header').innerHTML = '&#x25B2;';
-            }
-        }
-    </script>
-
-    <div class="header">
-        <div id="logo-container"><img src="logo.png" alt="Logo"></div>
-        <div class="main-title-group">
-            <span id="collapse-button-header" onclick="toggleStats()">&#x25BC;</span>
-            <h1>🛠️ Dashboard de Atendimentos</h1>
-        </div>
-        <p class="data-att">Atualizado: {{ dados.data_atualizacao }}</p>
-    </div>
-
+...
     <div id="stats-area-content">
         <div class="stats-area">
             <div class="ordens-abertas">
                 <h3>📈 OS Abertas (Sistema)</h3>
-                <div style="font-size: 2.5em; color: #ffcc00;">{{ dados.ordens_abertas_manual }}</div>
+                <div style="font-size: 2.2em; color: #ffcc00; margin-bottom: 10px;">{{ dados.ordens_abertas_manual }}</div>
+                
+                <div style="border-top: 1px solid #444; padding-top: 10px; text-align: left;">
+                    <h4 style="color: #ff4444; margin: 5px 0; font-size: 0.9em; text-align: center;">🧰 Kit técnico (faltando) 🧰</h4>
+                    {% if dados.kits_faltando %}
+                        <ul style="font-size: 0.85em; list-style: none; padding: 0; margin: 0; color: #e0e0e0;">
+                            {% for tecnico, kit in dados.kits_faltando.items() %}
+                                <li style="margin-bottom: 3px;"><b>{{ tecnico }}:</b> {{ kit }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p style="font-size: 0.8em; opacity: 0.5; text-align: center;">Tudo completo!</p>
+                    {% endif %}
+                </div>
             </div>
 
             <div class="stats-comparativo">
                 <h3>📊 Resumo das Tarefas</h3>
-                <div class="stats-item" style="color: #4CAF50;"><span>CONCLUÍDAS:</span> <span class="stat-value">{{ dados.stats.CONCLUIDO }}</span></div>
-                <div class="stats-item" style="color: #FF9800;"><span>EM ANDAMENTO:</span> <span class="stat-value">{{ dados.stats.EM_ANDAMENTO }}</span></div>
-                <div class="stats-item" style="color: #ff4444;"><span>FALHAS:</span> <span class="stat-value">{{ dados.stats.FALHA }}</span></div> <div class="stats-item" style="color: #9E9E9E;"><span>PENDENTES:</span> <span class="stat-value">{{ dados.stats.PENDENTE }}</span></div>
-                
-                <h4 style="color: #4dc4ff; margin-top: 10px;">Por Técnico:</h4>
-                {% for tecnico, s in dados.stats.por_tecnico.items() %}
-                    <div style="font-size: 0.85em; margin-bottom: 4px;">
-                        <b>{{ tecnico }}:</b> <span style="color:#4CAF50">C:{{s.CONCLUIDO}}</span> | <span style="color:#FF9800">A:{{s.EM_ANDAMENTO}}</span> | <span style="color:#ff4444">F:{{s.FALHA}}</span> | <span style="color:#9E9E9E">P:{{s.PENDENTE}}</span>
-                    </div>
-                {% endfor %}
+                ... (mantenha o código das estatísticas dos técnicos que já tínhamos) ...
             </div>
         </div>
-        
-        <div class="container-legenda" style="display: flex; justify-content: center; gap: 15px; background: #1f1f1f; padding: 10px; border-radius: 5px; margin-bottom: 20px; border: 1px solid #333;">
-            <span style="color: #4CAF50;">● CONCLUIDO</span>
-            <span style="color: #FF9800;">● EM ANDAMENTO</span>
-            <span style="color: #ff4444;">● FALHA</span> <span style="color: #9E9E9E;">● PENDENTE</span>
-        </div>
-    </div>
-
-    <div class="container">
-        {% for tecnico, tarefas in dados.tecnicos.items() %}
-            <div class="coluna-tecnico">
-                <h2>👨🏻‍🔧 {{ tecnico }} ({{ tarefas|length }})</h2>
-                {% for t in tarefas %}
-                    <div class="card-tarefa {{ t.Status_Clean }}">
-                        <div class="card-header">{{ t.ID }} - {{ t.Cliente }}</div>
-                        <p>{{ t.Descricao }}</p>
-                        {% if t.Cobranca %}<div class="card-cobranca">💰 {{ t.Cobranca }}</div>{% endif %}
-                        {% if t.Observacao %}<div class="card-obs">{{ t.Observacao }}</div>{% endif %}
-                    </div>
-                {% endfor %}
-            </div>
-        {% endfor %}
-    </div>
-</body>
-</html>
+...
