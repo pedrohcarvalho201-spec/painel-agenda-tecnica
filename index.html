@@ -1,20 +1,154 @@
-...
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="refresh" content="60"> <title>Dashboard | Agenda Técnica</title>
+    <style>
+        /* CSS BÁSICO E TEMA ESCURO */
+        body { 
+            font-family: Arial, sans-serif; background-color: #121212; color: #e0e0e0; 
+            margin: 0; padding: 20px; 
+        }
+        .header { 
+            background-color: #000000; color: white; padding: 15px; margin-bottom: 20px; border-radius: 5px; 
+            box-shadow: 0 4px 8px rgba(0,0,0,0.5); 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+        }
+        .main-title-group { 
+            text-align: center; 
+            flex-grow: 1; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+        }
+        .main-title-group h1 { margin: 0; padding-left: 10px; font-size: 1.8em; }
+
+        .data-att { font-size: 0.9em; opacity: 0.8; text-align: right; width: 180px; }
+        
+        /* LOGO */
+        #logo-container { width: 150px; height: 50px; display: flex; align-items: center; justify-content: flex-start; }
+        #logo-container img { max-width: 100%; max-height: 100%; object-fit: contain; }
+
+        /* BOTÃO RECOLHER NO HEADER */
+        #collapse-button-header { 
+            cursor: pointer; font-size: 28px; color: #4dc4ff; line-height: 1; 
+            transition: color 0.2s; margin-left: 10px; 
+        }
+        #collapse-button-header:hover { color: white; }
+
+        /* ÁREA DE STATS E RECOLHIMENTO */
+        #stats-area-content { 
+            transition: max-height 0.3s ease-out, opacity 0.3s ease-out, margin 0.3s ease-out;
+            overflow: hidden; max-height: 1000px; opacity: 1; margin-bottom: 20px; 
+        }
+        #stats-area-content.hidden { max-height: 0 !important; opacity: 0 !important; margin-bottom: 0 !important; }
+
+        .stats-area { display: flex; justify-content: space-between; gap: 20px; margin-bottom: 20px; flex-wrap: wrap; }
+        
+        /* BOX OS ABERTAS E KIT TÉCNICO */
+        .ordens-abertas {
+            background-color: #1f1f1f; padding: 15px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+            flex: 1 1 280px; text-align: center; border: 2px solid #ffcc00;
+        }
+        .kit-faltante-box {
+            border-top: 1px solid #444; padding-top: 10px; margin-top: 10px; text-align: left;
+        }
+
+        /* BOX COMPARATIVO */
+        .stats-comparativo {
+            background-color: #1f1f1f; padding: 15px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+            flex: 2 1 450px;
+        }
+        .stats-item { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px dashed #333; }
+        .stat-value { font-weight: bold; }
+
+        /* LEGENDA */
+        .container-legenda { 
+            background-color: #1f1f1f; border: 1px solid #333; color: #f0f0f0; 
+            padding: 10px 20px; border-radius: 5px; margin-bottom: 20px; font-size: 0.9em; 
+            display: flex; flex-wrap: wrap; justify-content: center; gap: 15px;
+        }
+
+        /* CARDS E COLUNAS */
+        .container { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; }
+        .coluna-tecnico { 
+            flex: 1 1 300px; min-width: 300px; 
+            background-color: #1f1f1f; padding: 15px; border-radius: 8px; 
+            box-shadow: 0 4px 8px rgba(0,0,0,0.5); 
+        }
+        .coluna-tecnico h2 { color: #4dc4ff; border-bottom: 2px solid #4dc4ff; padding-bottom: 10px; margin-top: 0; }
+        
+        .card-tarefa { padding: 10px; margin-bottom: 10px; border-radius: 5px; border-left: 5px solid; background-color: #2a2a2a; }
+        .card-header { font-weight: bold; margin-bottom: 5px; color: #f0f0f0; } 
+        .card-obs { font-size: 0.85em; color: #ffffff; margin-top: 5px; border-top: 1px dashed #666666; padding-top: 5px; font-weight: bold; }
+        .card-cobranca { font-size: 0.9em; color: #ffcc00; font-weight: bold; margin-top: 5px; border-top: 1px solid #444; padding-top: 5px; }
+
+        /* CORES DE STATUS VÍVIDAS */
+        .CONCLUIDO { background-color: #1e561e; border-color: #4CAF50; } 
+        .EM_ANDAMENTO { background-color: #5c4015; border-color: #FF9800; } 
+        .PENDENTE { background-color: #424242; border-color: #9E9E9E; } 
+        .FALHA { background-color: #581818; border-color: #ff4444; } 
+
+    </style>
+</head>
+<body>
+    
+    <script>
+        function toggleStats() {
+            const statsArea = document.getElementById('stats-area-content'); 
+            const button = document.getElementById('collapse-button-header');
+            
+            if (statsArea.classList.contains('hidden')) {
+                statsArea.classList.remove('hidden');
+                button.innerHTML = '&#x25BC;';
+                localStorage.setItem('statsCollapsed', 'false');
+            } else {
+                statsArea.classList.add('hidden');
+                button.innerHTML = '&#x25B2;';
+                localStorage.setItem('statsCollapsed', 'true');
+            }
+        }
+        
+        window.onload = function() {
+            if (localStorage.getItem('statsCollapsed') === 'true') {
+                document.getElementById('stats-area-content').classList.add('hidden');
+                document.getElementById('collapse-button-header').innerHTML = '&#x25B2;';
+            }
+        }
+    </script>
+
+    <div class="header">
+        <div id="logo-container">
+            <img src="logo.png" alt="Logo da Empresa">
+        </div>
+
+        <div class="main-title-group">
+            <span id="collapse-button-header" onclick="toggleStats()">&#x25BC;</span>
+            <h1>🛠️ Dashboard de Atendimentos</h1>
+        </div>
+        
+        <p class="data-att">Última Atualização:<br>19/12/2025 09:33:29</p>
+    </div>
+
     <div id="stats-area-content">
         <div class="stats-area">
             <div class="ordens-abertas">
                 <h3>📈 OS Abertas (Sistema)</h3>
-                <div style="font-size: 2.2em; color: #ffcc00; margin-bottom: 10px;">Maxvel: 17 / Forte: 16</div>
+                <div style="font-size: 2.2em; color: #ffcc00; margin-bottom: 5px;">Maxvel: 17 / Forte: 16</div>
                 
-                <div style="border-top: 1px solid #444; padding-top: 10px; text-align: left;">
+                <div class="kit-faltante-box">
                     <h4 style="color: #ff4444; margin: 5px 0; font-size: 0.9em; text-align: center;">🧰 Kit técnico (faltando) 🧰</h4>
                     
                         <ul style="font-size: 0.85em; list-style: none; padding: 0; margin: 0; color: #e0e0e0;">
                             
-                                <li style="margin-bottom: 3px;"><b>Giovani:</b> Fonte 10AP, módulo ethernet.</li>
+                                <li style="margin-bottom: 4px;"><b>Giovani:</b> Fonte 10AP, módulo ethernet.</li>
                             
-                                <li style="margin-bottom: 3px;"><b>Pedro:</b> Módulo Ethernet</li>
+                                <li style="margin-bottom: 4px;"><b>Pedro:</b> Módulo Ethernet</li>
                             
-                                <li style="margin-bottom: 3px;"><b>Roberto:</b> 2 pilha da AMT 8000, tipo bateria.</li>
+                                <li style="margin-bottom: 4px;"><b>Roberto:</b> 2 pilha da AMT 8000, tipo bateria.</li>
                             
                         </ul>
                     
@@ -23,7 +157,143 @@
 
             <div class="stats-comparativo">
                 <h3>📊 Resumo das Tarefas</h3>
-                ... (mantenha o código das estatísticas dos técnicos que já tínhamos) ...
+                <div class="stats-item" style="color: #4CAF50;"><span>CONCLUÍDAS:</span> <span class="stat-value">0</span></div>
+                <div class="stats-item" style="color: #FF9800;"><span>EM ANDAMENTO:</span> <span class="stat-value">0</span></div>
+                <div class="stats-item" style="color: #ff4444;"><span>FALHAS:</span> <span class="stat-value">0</span></div>
+                <div class="stats-item" style="color: #9E9E9E;"><span>PENDENTES:</span> <span class="stat-value">6</span></div>
+                
+                <h4 style="color: #4dc4ff; margin-top: 15px; border-top: 1px solid #333; padding-top: 10px;">Comparativo por Técnico:</h4>
+                
+                    <div style="font-size: 0.85em; margin-bottom: 5px;">
+                        <b>Fábio:</b> 
+                        <span style="color: #4CAF50;">C: 0</span> | 
+                        <span style="color: #FF9800;">A: 0</span> | 
+                        <span style="color: #ff4444;">F: 0</span> | 
+                        <span style="color: #9E9E9E;">P: 1</span>
+                    </div>
+                
+                    <div style="font-size: 0.85em; margin-bottom: 5px;">
+                        <b>Giovani:</b> 
+                        <span style="color: #4CAF50;">C: 0</span> | 
+                        <span style="color: #FF9800;">A: 0</span> | 
+                        <span style="color: #ff4444;">F: 0</span> | 
+                        <span style="color: #9E9E9E;">P: 0</span>
+                    </div>
+                
+                    <div style="font-size: 0.85em; margin-bottom: 5px;">
+                        <b>Pedro:</b> 
+                        <span style="color: #4CAF50;">C: 0</span> | 
+                        <span style="color: #FF9800;">A: 0</span> | 
+                        <span style="color: #ff4444;">F: 0</span> | 
+                        <span style="color: #9E9E9E;">P: 5</span>
+                    </div>
+                
+                    <div style="font-size: 0.85em; margin-bottom: 5px;">
+                        <b>Roberto:</b> 
+                        <span style="color: #4CAF50;">C: 0</span> | 
+                        <span style="color: #FF9800;">A: 0</span> | 
+                        <span style="color: #ff4444;">F: 0</span> | 
+                        <span style="color: #9E9E9E;">P: 0</span>
+                    </div>
+                
             </div>
         </div>
-...
+        
+        <div class="container-legenda">
+            <span style="color: #6c757d; font-weight: bold;">Legenda:</span>
+            <span style="color: #4CAF50;">● CONCLUIDO</span>
+            <span style="color: #FF9800;">● EM ANDAMENTO</span>
+            <span style="color: #ff4444;">● FALHA</span>
+            <span style="color: #9E9E9E;">● PENDENTE</span>
+        </div>
+    </div>
+
+    <div class="container">
+        
+            <div class="coluna-tecnico">
+                <h2>👨🏻‍🔧 Fábio (1)</h2>
+                
+                    <div class="card-tarefa PENDENTE">
+                        <div class="card-header">0730 - JR Leo Ipatinga</div>
+                        <p>Câmeras com defeito, cliente pedindo reparo. Há uma pequena chance dele ir hoje ao local.</p>
+                        
+                        
+                    </div>
+                
+            </div>
+        
+            <div class="coluna-tecnico">
+                <h2>👨🏻‍🔧 Giovani (1)</h2>
+                
+                    <div class="card-tarefa ">
+                        <div class="card-header"> - </div>
+                        <p></p>
+                        
+                        
+                    </div>
+                
+            </div>
+        
+            <div class="coluna-tecnico">
+                <h2>👨🏻‍🔧 Pedro (6)</h2>
+                
+                    <div class="card-tarefa PENDENTE">
+                        <div class="card-header">2277 - ReproMaq Externa</div>
+                        <p>Cliente solicitando revisão em câmeras não monitoradas.</p>
+                        
+                        
+                    </div>
+                
+                    <div class="card-tarefa PENDENTE">
+                        <div class="card-header">4010 - Avant</div>
+                        <p>Cliente pedindo revisão no sistema, disse que tava saindo fumaça.</p>
+                        
+                        
+                    </div>
+                
+                    <div class="card-tarefa PENDENTE">
+                        <div class="card-header">2503 - Pirobras</div>
+                        <p>Cliente pedindo revisão em zonas que estão disparando frequentemente.</p>
+                        
+                        
+                    </div>
+                
+                    <div class="card-tarefa PENDENTE">
+                        <div class="card-header">2261 - Escola CNA</div>
+                        <p>Sem comunicação de alarmes, via GPRS.</p>
+                        
+                        
+                    </div>
+                
+                    <div class="card-tarefa PENDENTE">
+                        <div class="card-header">2090 - Wetravel</div>
+                        <p>Sem comunicação de alarmes, via internet.</p>
+                        
+                        
+                    </div>
+                
+                    <div class="card-tarefa ">
+                        <div class="card-header">2064 - Vanessa do Romualdo</div>
+                        <p>Cliente pedindo revisão no sistema de alarmes.</p>
+                        
+                        
+                    </div>
+                
+            </div>
+        
+            <div class="coluna-tecnico">
+                <h2>👨🏻‍🔧 Roberto (1)</h2>
+                
+                    <div class="card-tarefa ">
+                        <div class="card-header"> - </div>
+                        <p></p>
+                        
+                        
+                    </div>
+                
+            </div>
+        
+    </div>
+
+</body>
+</html>
