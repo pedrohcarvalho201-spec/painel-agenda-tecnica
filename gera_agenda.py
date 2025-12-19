@@ -9,14 +9,14 @@ def ler_dados(caminho_planilha='agenda.xlsx'):
             'ID': str, 'Técnico': str, 'Cliente': str, 
             'Descrição': str, 'Observação': str, 'Cobrança': str, 
             'Status': str, 'Ordens Abertas': str,
-            'Kit Faltando': str # <--- NOVA COLUNA NO EXCEL
+            'Kit Faltando': str
         }
         df = pd.read_excel(caminho_planilha, sheet_name=0, dtype=dtype_config) 
     except Exception as e:
         print(f"ERRO ao ler planilha: {e}")
         return None
     
-    # Padronização
+    # Padronização de nomes de colunas
     df = df.rename(columns={
         'Descrição': 'Descricao', 
         'Observação': 'Observacao', 
@@ -27,19 +27,28 @@ def ler_dados(caminho_planilha='agenda.xlsx'):
     df = df.fillna('')
     
     stats = {'total': 0, 'CONCLUIDO': 0, 'EM_ANDAMENTO': 0, 'PENDENTE': 0, 'FALHA': 0, 'por_tecnico': {}}
-    kits_faltando = {} # Dicionário para armazenar kits por técnico
+    kits_faltando = {} 
 
-    df['Status_Clean'] = df['Status'].str.upper().str.replace(' ', '_')
-    tecnicos_data = {}
-    
+    # 1. Coletar informações de Kits de TODOS os técnicos antes de filtrar tarefas
     for tecnico, grupo in df.groupby('Técnico'):
         tecnico_str = str(tecnico).strip()
-        if tecnico_str:
-            # Pega o kit faltando do técnico (primeira linha encontrada dele)
+        if tecnico_str and tecnico_str.lower() != 'nan':
+            # Procura qualquer menção de kit para este técnico na planilha toda
             kit_info = grupo['KitFaltando'].replace('', pd.NA).dropna().iloc[0] if not grupo['KitFaltando'].replace('', pd.NA).dropna().empty else ""
             if kit_info:
                 kits_faltando[tecnico_str] = kit_info
 
+    # 2. Filtrar o DataFrame: Manter apenas linhas que possuam Cliente ou ID (tarefas REAIS)
+    # Isso remove os técnicos que só estão na planilha para acusar o kit
+    df_tarefas = df[df['Cliente'].str.strip() != ''].copy()
+
+    df_tarefas['Status_Clean'] = df_tarefas['Status'].str.upper().str.replace(' ', '_')
+    tecnicos_data = {}
+    
+    # 3. Processar apenas os técnicos que possuem tarefas reais para as colunas e estatísticas
+    for tecnico, grupo in df_tarefas.groupby('Técnico'):
+        tecnico_str = str(tecnico).strip()
+        if tecnico_str:
             g_stats = grupo['Status_Clean'].value_counts().to_dict()
             t_stats = {
                 'total': len(grupo),
@@ -57,14 +66,15 @@ def ler_dados(caminho_planilha='agenda.xlsx'):
             
             tecnicos_data[tecnico_str] = grupo.to_dict('records')
 
-    ordens = df['OrdensAbertas'].iloc[0] if not df.empty and df['OrdensAbertas'].iloc[0] != "" else '0'
+    # Pega o valor das Ordens Abertas (da planilha original, caso esteja em uma linha sem tarefa)
+    ordens = df['OrdensAbertas'].replace('', pd.NA).dropna().iloc[0] if not df['OrdensAbertas'].replace('', pd.NA).dropna().empty else '0'
     
     return {
         'data_atualizacao': datetime.now().strftime('%d/%m/%Y %H:%M:%S'),
         'tecnicos': tecnicos_data,
         'stats': stats,
         'ordens_abertas_manual': ordens,
-        'kits_faltando': kits_faltando # <--- ENVIANDO PARA O HTML
+        'kits_faltando': kits_faltando
     }
 
 def gerar_html(dados):
@@ -79,7 +89,7 @@ def main():
         html = gerar_html(dados)
         with open('index.html', 'w', encoding='utf-8') as f:
             f.write(html)
-        print(f"🚀 Painel atualizado às {dados['data_atualizacao']}")
+        print(f"🚀 Painel atualizado com filtro de tarefas ativado às {dados['data_atualizacao']}")
 
 if __name__ == "__main__":
     main()
